@@ -7,3 +7,4 @@ mysql_pkgs:
 
 mysql_service: mysql
 mysql_conf_dir: "/etc/mysql/"
+mysql_confd_dir: "/etc/mysql/conf.d"

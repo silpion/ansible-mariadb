@@ -51,7 +51,17 @@
   mysql_db: name=test state=absent
 
 - name: Create the database's
-  mysql_db: name={{ item.name }} state=present
+  mysql_db: 
+    name={{ item.name }} 
+    collation={{ item.collation |default('') }}
+    encoding={{ item.encoding | default('') }}
+    login_host={{ item.login_host | default('localhost') }}
+    login_password={{ item.login_password | default('') }}
+    login_port={{ item.login_port |default('') }}
+    login_unix_socket={{ item.login_unix_socket | default('') }}
+    login_user={{ item.login_user | default('') }}
+    target={{ item.target | default('') }}
+    state={{ item.state | default('present') }}
   with_items: mysql_db
   when: mysql_db|lower() != 'none'
 
@@ -87,4 +97,7 @@
   mysql_replication: mode=changemaster master_host={{ mysql_repl_master }} master_log_file={{ repl_stat.File }} master_log_pos={{ repl_stat.Position }} master_user={{ mysql_repl_user[0].name }} master_password={{ mysql_repl_user[0].pass }}
   when: slave|failed and mysql_repl_role == 'slave' and mysql_repl_master is defined
 
+- name: applay additional mysql configs
+  ini_file: dest="{{ mysql_confd_dir }}/{{ mysql_confd_file }}" section="{{ item.section }}"  option="{{ item.option }}" value="{{ item.value }}"
+  with_items: mysql_config
 
