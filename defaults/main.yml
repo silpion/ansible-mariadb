@@ -21,3 +21,7 @@ mysql_repl_user:
 
 mysql_repl_role: master
 mysql_db_id: 7
+
+mysql_config: []
+mysql_confd_file: "foobar.cnf"
+
