@@ -100,4 +100,5 @@
 - name: applay additional mysql configs
   ini_file: dest="{{ mysql_confd_dir }}/{{ mysql_confd_file }}" section="{{ item.section }}"  option="{{ item.option }}" value="{{ item.value }}"
   with_items: mysql_config
-
+  notify: 
+   - restart mysql
