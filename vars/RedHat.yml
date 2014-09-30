@@ -1,12 +1,11 @@
 ---
-mysql_pkgs:
+mariadb_pkgs:
   - libselinux-python
-  - mysql-server
-  - MySQL-python
+  - mariadb-server
+  - mysql-python
 
-mysql_service: mysqld
+mariadb_service: mariadbd
 
-mysql_conf_dir: "/etc/"
-mysql_confd_dir: "/etc/"
-mysql_confd_file: "my.cnf"
-
+mariadb_conf_dir: "/etc/"
+mariadb_confd_dir: "/etc/"
+mariadb_confd_file: "my.cnf"
