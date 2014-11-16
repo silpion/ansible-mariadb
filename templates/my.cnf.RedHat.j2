@@ -1,7 +1,7 @@
 [mysqld]
-datadir=/var/lib/mariadb
-socket=/var/lib/mariadb/mariadb.sock
-user=mariadb
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
 port={{ mariadb_port }}
@@ -9,7 +9,7 @@ bind-address={{ mariadb_bind_address }}
 server-id               = {{ mariadb_db_id }}
 
 {% if mariadb_repl_role == 'master' %}
-log_bin                 = mariadb-bin
+log_bin                 = mysql-bin
 expire_logs_days        = 10
 max_binlog_size         = 100M
 
@@ -27,5 +27,5 @@ binlog_ignore_db        = {{ i.name }}
 {% endif %}
 
 [mysqld_safe]
-log-error=/var/log/mariadbd.log
-pid-file=/var/run/mariadbd/mariadbd.pid
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
