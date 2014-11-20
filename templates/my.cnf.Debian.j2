@@ -3,22 +3,22 @@
 #
 [client]
 port		= {{ mariadb_port }}
-socket		= /var/run/mariadbd/mariadbd.sock
+socket		= /var/run/mysqld/mysqld.sock
 
-# This was formally known as [safe_mariadbd]. Both versions are currently parsed.
+# This was formally known as [safe_mysqld]. Both versions are currently parsed.
 [mysqld_safe]
-socket		= /var/run/mariadbd/mariadbd.sock
+socket		= /var/run/mysqld/mysqld.sock
 nice		= 0
 
 [mysqld]
-user		= mariadb
-pid-file	= /var/run/mariadbd/mariadbd.pid
-socket		= /var/run/mariadbd/mariadbd.sock
+user		= mysql
+pid-file	= /var/run/mysqld/mysqld.pid
+socket		= /var/run/mysqld/mysqld.sock
 port		= {{ mariadb_port }}
 basedir		= /usr
-datadir		= /var/lib/mariadb
+datadir		= /var/lib/mysql
 tmpdir		= /tmp
-lc-messages-dir	= /usr/share/mariadb
+lc-messages-dir	= /usr/share/mysql
 skip-external-locking
 
 bind-address		= {{ mariadb_bind_address }}
@@ -30,11 +30,11 @@ thread_cache_size       = 8
 
 query_cache_limit	= 1M
 query_cache_size        = 16M
-log_error = /var/log/mariadb/error.log
+log_error = /var/log/mysql/error.log
 server-id               = {{ mariadb_db_id }}
 
 {% if mariadb_repl_role == 'master' %}
-log_bin                 = mariadb-bin
+log_bin                 = mysql-bin
 expire_logs_days        = 10
 max_binlog_size         = 100M
 
@@ -53,4 +53,4 @@ binlog_ignore_db        = {{ i.name }}
 {% endif %}
 {% endif %}
 
-!includedir /etc/mariadb/conf.d/
+!includedir /etc/mysql/conf.d/

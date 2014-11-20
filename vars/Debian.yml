@@ -5,6 +5,6 @@ mariadb_pkgs:
   - mariadb-server
   - python-mysqldb
 
-mariadb_service: mariadb
+mariadb_service: mysql
 mariadb_conf_dir: "/etc/mysql/"
 mariadb_confd_dir: "/etc/mysql/conf.d"
