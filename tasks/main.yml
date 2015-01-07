@@ -119,15 +119,15 @@
   mysql_replication: mode=changemaster master_host={{ mariadb_repl_master }} master_log_file={{ repl_stat.File }} master_log_pos={{ repl_stat.Position }} master_user={{ mariadb_repl_user[0].name }} master_password={{ mariadb_repl_user[0].pass }}
   when: slave|failed and mariadb_repl_role == 'slave' and mariadb_repl_master is defined
 
-- name: applay additional mariadb configs
+- name: Apply additional mariadb configuration
   tags: mariadb
   ini_file: dest="{{ mariadb_confd_dir }}/{{ mariadb_confd_file }}" section="{{ item.section }}" option="{{ item.option }}" value="{{ item.value }}"
   with_items: mariadb_config
   notify:
    - restart mariadb
 
-- name: Notify add additional db users
+- name: Notify update additional db users
   tags: mariadb
   with_items: mariadb_additional_users
-  notify: Add additional db users
+  notify: update additional db users
   command: echo "{{ item.name }}"
