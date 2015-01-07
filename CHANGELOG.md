@@ -1,3 +1,11 @@
+# 0.2.3
+
+Anja Siek (1):
+      add possebility to notify users and permission management
+
+Mark Kusch (1):
+      Add some minor typo thingis
+
 # 0.2.2
 
 Anja Siek (1):
