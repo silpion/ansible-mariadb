@@ -1,3 +1,8 @@
+# 0.2.2
+
+Anja Siek (1):
+      add mysql_user value option append_privs
+
 # 0.2.1
 
 Anja Siek (1):
