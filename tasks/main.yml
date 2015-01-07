@@ -78,8 +78,13 @@
 
 - name: Create the database users
   tags: mariadb
-  mysql_user: name={{ item.name }}  password={{ item.pass|default("foobar") }}
-                priv={{ item.priv|default("*.*:ALL") }} state=present host={{ item.host|default("localhost") }}
+  mysql_user:
+    name={{ item.name }}
+    password={{ item.pass|default("foobar") }}
+    priv={{ item.priv|default("*.*:ALL") }}
+    state=present
+    host={{ item.host|default("localhost") }}
+    append_privs={{ item.append_privs|default("no") }}
   with_items: mariadb_users
   when: mariadb_users|lower() != 'none'
 
