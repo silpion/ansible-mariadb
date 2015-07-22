@@ -2,10 +2,10 @@
 
 #Array, may contain multiple databases
 db=({% for db in mariadb_dump_databases %}{{ db }} {% endfor %})
-db_user="mysql_dump"
+db_user="{{ mariadb_dump_username }}"
 db_password="{{ mariadb_dump_userpassword }}"
 
-db_dir="{{ db_dump_destinationdir }}"
+db_dir="{{ mariadb_dump_destinationdir }}"
 db_file="dump-$(date +%F-%H-%M).sql.gz"
 db_file_all="mysql-dump.sql.gz"
 
@@ -19,7 +19,6 @@ mysql_dump(){
                 echo -e "\nDB $database is beeing backupted\n"
                 $MYSQLDUMP -u $db_user -p${db_password} --single-transaction --quick $database | $GZIP > $db_dir/$database-$db_file
         done
-        $MYSQLDUMP -u $db_user -p${db_password} -A -e --single-transaction --quick | $GZIP > $db_dir/$db_file_all
 }
 
 

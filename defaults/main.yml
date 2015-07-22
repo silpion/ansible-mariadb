@@ -10,6 +10,7 @@ mariadb_db:
      - name: bar
        replicate: no
 
+mariadb_users: []
 mariadb_users_create: "{{ mariadb_users }}"
 
 mariadb_additional_users: []
@@ -25,8 +26,9 @@ mariadb_config: []
 mariadb_confd_file: "foobar.cnf"
 
 mariadb_enable_dump: false
+mariadb_dump_username: 'mariadb_dump'
 mariadb_dump_destinationdir_create: false
 mariadb_dump_scripfile: '/usr/local/sbin/mariadb_dump'
 mariadb_dump_crontime:
-  - hour: 4
-  - dayofweek: '*'
+  hour: 4
+  dayofweek: '*'
