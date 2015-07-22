@@ -1,0 +1,6 @@
+mariadb_backupuser:
+  - name: mariadb_dump
+    pass: "{{ mariadb_dump_userpassword }}"
+    priv: "{% for db in mariadb_db %}{{ db.name }}.*:ALL{% if not loop.last %},{% endif %}{% endfor %}"
+
+mariadb_users_create: "{{ mariadb_users + mariadb_backupuser }}"

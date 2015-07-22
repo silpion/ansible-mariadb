@@ -1,0 +1,62 @@
+---
+- name: Assert required dump variables exist
+  tags:
+    - mariadb
+    - mariadb_dump
+ assert:
+   that:
+    - mariadb_dump_userpassword is defined
+    - mariadb_dump_databases is defined
+    - mariadb_dump_destinationdir is defined
+
+- name: Include dump vars
+  tags:
+    - mariadb
+    - mariadb_dump
+  include: mariadb_dump.yml
+
+- name: Check if mariadb_dump_destinationdir exists
+  tags:
+    - mariadb
+    - mariadb_dump
+  stat: path="{{ db_dump_destinationdir }}"
+  changed_when: False
+  register: stats_db_dump_destinationdir
+
+- name: Create mariadb_dump_destinationdir
+  tags:
+    - mariadb
+    - mariadb_dump
+  become: true
+  file:
+    state=directory
+    path="{{ mariadb_dump_destinationdir }}"
+    owner=0
+    group=0
+    mode=0755
+  when: "{{ mariadb_dump_destinationdir_create }} and stats_db_dump_destinationdir.exists == false
+
+- name: Deploy backupscript
+  tags:
+    - mariadb
+    - mariadb_dump
+  become: true
+  template:
+    src=templates/mariadb_dump.j2
+    dest="{{ mariadb_dump_scripfile }}"
+    owner=0
+    group=0
+    mode=0700
+
+- name: Create cronjob for backupscript
+  tags:
+    - mariadb
+    - mariadb_dump
+  become: true
+  cron:
+    state=present
+    job="{{ mariadb_dump_scripfile }}"
+    name=mariadb_backup
+    minute=0
+    hour="{{ mariadb_dump_crontime.hour }}"
+    weekday="{{ mariadb_dump_crontime.weekday }}"
