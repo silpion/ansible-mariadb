@@ -3,6 +3,11 @@
   tags: mariadb
   include_vars: "{{ ansible_os_family }}.yml"
 
+- name: Include MariaDB dump tasks
+  tags: mariadb
+  when: mariadb_enable_dump
+  include: dump.yml
+
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb
   yum: name={{ item }} state=installed
@@ -85,8 +90,8 @@
     state=present
     host={{ item.host|default("localhost") }}
     append_privs={{ item.append_privs|default("no") }}
-  with_items: mariadb_users
-  when: mariadb_users|lower() != 'none'
+  with_items: mariadb_users_create
+  when: mariadb_users_create |length > 0
 
 - name: Create the replication users
   tags: mariadb

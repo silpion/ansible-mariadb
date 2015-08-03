@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  vars:
+    mariadb_dump_userpassword: 'foobar'
+    mariadb_dump_destinationdir: '/database_backup'
+    mariadb_dump_destinationdir_create: true
+    mariadb_dump_databases:
+      - foo
+    mariadb_db:
+      - name: foo
+        replicate: no
+  roles:
+    - { role: ansible-mariadb }
+    - { role: ansible-mariadb, mariadb_enable_dump: true }
