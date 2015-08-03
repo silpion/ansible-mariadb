@@ -16,3 +16,6 @@
 
 # Custom
 /temp
+*.swp
+.vagrant
+envvars-vagrant

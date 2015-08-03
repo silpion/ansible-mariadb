@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#Array, may contain multiple databases
+db=({% for db in mariadb_dump_databases %}{{ db }} {% endfor %})
+db_user="{{ mariadb_dump_username }}"
+db_password="{{ mariadb_dump_userpassword }}"
+
+db_dir="{{ mariadb_dump_destinationdir }}"
+db_file="dump-$(date +%F-%H-%M).sql.gz"
+db_file_all="mysql-dump.sql.gz"
+
+MYSQLDUMP="/usr/bin/mysqldump"
+GZIP="/bin/gzip"
+FIND="/usr/bin/find"
+
+
+mysql_dump(){
+        for database in ${db[*]};do
+                echo -e "\nDB $database is beeing backupted\n"
+                $MYSQLDUMP -u $db_user -p${db_password} --single-transaction --quick $database | $GZIP > $db_dir/$database-$db_file
+        done
+}
+
+
+remove_old_files(){
+        for database in ${db[*]};do
+                echo -e "\nREMOVE files older than 2 days\n"
+                $FIND $db_dir -name "$database-dump*" -mtime +1 -exec rm {} \;
+        done
+}
+
+set_perm(){
+        chmod -R 400 $db_dir/*
+}
+
+mysql_dump
+remove_old_files
+set_perm

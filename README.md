@@ -51,6 +51,17 @@ them are as follows:
       # A unique id for the mariadb server (used in replication):
       mariadb_db_id: 7
 
+# MariaDB dump
+
+* mariadb_enable_dump: Wether to execute MariaDB dump tasks (boolean, default: false)
+* mariadb_dump_username: Name for the dump user (String, default: mariadb_dump)
+* mariadb_dump_userpassword: Password for the dump user (String, mandatory)
+* mariadb_dump_destinationdir: The directory to dump to (String, mandatory)
+* mariadb_dump_databases: A list of the databases to dump (List, mandatory)
+* mariadb_dump_crontime.hour: Hour at which to run the dump cronjob (String, refer to cron manual for details, default: '4')
+* mariadb_dump_crontime.dayofweek: Day of week at which to run the dump cronjob (String, refer to cron manual for details, default: '*')
+* mariadb_dump_scriptfile: File to store the backupscript in (String, default: '/usr/local/sbin/mariadb_dump')
+
 Examples
 --------
 
@@ -105,11 +116,35 @@ configured via this role and the master is available in inventory and facts
 have been gathered for master. The replication tasks assume the database is
 new and has no data.
 
+## Integration testing
 
-Dependencies
-------------
+This role provides integration tests using the Ruby RSpec/serverspec framework
+with a few drawbacks at the time of writing this documentation.
 
-None
+Running integration tests requires a number of dependencies being
+installed. As this role uses Ruby RSpec there is the need to have
+Ruby with rake and bundler available.
+
+    # install role specific dependencies with bundler
+    bundle install
+
+<!-- -->
+
+    # run the complete test suite with Docker
+    rake suite
+
+<!-- -->
+
+    # run the complete test suite with Vagrant
+    source  envvars-vagrant.sample
+    rake suite
+
+    # run the complete test suite with Vagrant without destroying the box afterwards
+    source  envvars-vagrant.sample
+    RAKE_ANSIBLE_VAGRANT_DONT_CLEANUP=1 rake suite
+
+
+
 
 License
 -------
@@ -121,4 +156,4 @@ Author Information
 
 Benno Joy
 
-
+<!-- vim: set nofen ts=4 sw=4 et: -->
