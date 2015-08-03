@@ -15,14 +15,6 @@
     - mariadb_dump
   include_vars: mariadb_dump.yml
 
-- name: Check if mariadb_dump_destinationdir exists
-  tags:
-    - mariadb
-    - mariadb_dump
-  stat: path="{{ mariadb_dump_destinationdir }}"
-  changed_when: False
-  register: stats_db_dump_destinationdir
-
 - name: Create mariadb_dump_destinationdir
   tags:
     - mariadb
@@ -34,7 +26,6 @@
     owner=0
     group=0
     mode=0755
-  when: "{{ mariadb_dump_destinationdir_create }} and (stats_db_dump_destinationdir.stat.exists == False)"
 
 - name: Deploy backupscript
   tags:
@@ -43,7 +34,7 @@
   become: true
   template:
     src=mariadb_dump.j2
-    dest="{{ mariadb_dump_scripfile }}"
+    dest="{{ mariadb_dump_scriptfile }}"
     owner=0
     group=0
     mode=0700
@@ -55,7 +46,7 @@
   become: true
   cron:
     state=present
-    job="{{ mariadb_dump_scripfile }}"
+    job="{{ mariadb_dump_scriptfile }}"
     name=mariadb_backup
     minute=0
     hour="{{ mariadb_dump_crontime.hour }}"

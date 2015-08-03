@@ -55,13 +55,12 @@ them are as follows:
 
 * mariadb_enable_dump: Wether to execute MariaDB dump tasks (boolean, default: false)
 * mariadb_dump_username: Name for the dump user (String, default: mariadb_dump)
-* mariadb_dump_userpassword: Password for the dump user (String, mandatory if mariadb_enable_dump: true)
-* mariadb_dump_destinationdir: The directory to dump to (String, mandatory if mariadb_enable_dump: true)
-* mariadb_dump_destinationdir_create: Wether to create the destination dir if it doesn't exist (boolean, default: false)
-* mariadb_dump_databases: A list of the databases to dump (List, mandatory if mariadb_enable_dump: true)
+* mariadb_dump_userpassword: Password for the dump user (String, mandatory)
+* mariadb_dump_destinationdir: The directory to dump to (String, mandatory)
+* mariadb_dump_databases: A list of the databases to dump (List, mandatory)
 * mariadb_dump_crontime.hour: Hour at which to run the dump cronjob (String, refer to cron manual for details, default: '4')
 * mariadb_dump_crontime.dayofweek: Day of week at which to run the dump cronjob (String, refer to cron manual for details, default: '*')
-* mariadb_dump_scripfile: File to store the backupscript in (String, default: '/usr/local/sbin/mariadb_dump')
+* mariadb_dump_scriptfile: File to store the backupscript in (String, default: '/usr/local/sbin/mariadb_dump')
 
 Examples
 --------

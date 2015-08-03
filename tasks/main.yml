@@ -5,8 +5,8 @@
 
 - name: Include MariaDB dump tasks
   tags: mariadb
-  include: dump.yml
   when: mariadb_enable_dump
+  include: dump.yml
 
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb
