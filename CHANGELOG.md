@@ -1,3 +1,16 @@
+# 1.1.0
+
+Alvaro Aleman (4):
+
+* mariadb\_backupscript: initial version
+* Added tdd infrastructure to role
+* [mariadb-backupscript]: Various minor fixes, permissions for backup user reduced, test playbook adjusted
+* Removed mariadb\_dump\_destinatordir\_create var, typo fixed, style adjusted
+
+Mark Kusch (1):
+
+* Pick missing commits from earlier release
+
 # 1.0.0
 
 Alvaro Aleman (1):
