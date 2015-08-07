@@ -20,9 +20,9 @@ Role Variables
 The variables that can be passed to this role and a brief description about
 them are as follows:
 
+      mariadb_root_db_pass: foobar       # The root DB password, mandatory
       mariadb_port: 3306                 # The port for mariadb server to listen
-      mariadb_bind_address: "0.0.0.0"    # The bind address for mariadb server
-      mariadb_root_db_pass: foobar       # The root DB password
+      mariadb_bind_address: "0.0.0.0"    # The bind address for mariadb server, default: 127.0.0.1
 
       # A list that has all the databases to be
       # created and their replication status:

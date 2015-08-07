@@ -1,4 +1,9 @@
 ---
+- name: Assert mandatory variables
+  tags: mariadb
+  assert:
+    that: mariadb_root_db_pass is defined
+
 - name: Add the OS specific variables
   tags: mariadb
   include_vars: "{{ ansible_os_family }}.yml"
