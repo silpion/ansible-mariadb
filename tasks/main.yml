@@ -135,9 +135,3 @@
   with_items: mariadb_config
   notify:
    - restart mariadb
-
-- name: Notify update additional db users
-  tags: mariadb
-  with_items: mariadb_additional_users
-  notify: update additional db users
-  command: echo "{{ item.name }}"

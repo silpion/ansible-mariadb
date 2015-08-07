@@ -7,8 +7,6 @@ mariadb_db: []
 mariadb_users: []
 mariadb_users_create: "{{ mariadb_users }}"
 
-mariadb_additional_users: []
-
 mariadb_repl_user: []
 
 mariadb_repl_role: None
