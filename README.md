@@ -20,7 +20,7 @@ Role Variables
 The variables that can be passed to this role and a brief description about
 them are as follows:
 
-      mariadb_root_db_pass: foobar       # The root DB password, mandatory
+      mariadb_root_db_pass: foobar       # The root DB password, **mandatory**
       mariadb_port: 3306                 # The port for mariadb server to listen
       mariadb_bind_address: "0.0.0.0"    # The bind address for mariadb server, default: 127.0.0.1
 
@@ -55,9 +55,9 @@ them are as follows:
 
 * mariadb_enable_dump: Wether to execute MariaDB dump tasks (boolean, default: false)
 * mariadb_dump_username: Name for the dump user (String, default: mariadb_dump)
-* mariadb_dump_userpassword: Password for the dump user (String, mandatory)
-* mariadb_dump_destinationdir: The directory to dump to (String, mandatory)
-* mariadb_dump_databases: A list of the databases to dump (List, mandatory)
+* mariadb_dump_userpassword: Password for the dump user (String, **mandatory**)
+* mariadb_dump_destinationdir: The directory to dump to (String, **mandatory**)
+* mariadb_dump_databases: A list of the databases to dump (List, **mandatory**)
 * mariadb_dump_crontime.hour: Hour at which to run the dump cronjob (String, refer to cron manual for details, default: '4')
 * mariadb_dump_crontime.dayofweek: Day of week at which to run the dump cronjob (String, refer to cron manual for details, default: '*')
 * mariadb_dump_scriptfile: File to store the backupscript in (String, default: '/usr/local/sbin/mariadb_dump')
