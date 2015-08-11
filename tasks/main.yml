@@ -1,4 +1,9 @@
 ---
+- name: Assert mandatory variables
+  tags: mariadb
+  assert:
+    that: mariadb_root_db_pass is defined
+
 - name: Add the OS specific variables
   tags: mariadb
   include_vars: "{{ ansible_os_family }}.yml"
@@ -130,9 +135,3 @@
   with_items: mariadb_config
   notify:
    - restart mariadb
-
-- name: Notify update additional db users
-  tags: mariadb
-  with_items: mariadb_additional_users
-  notify: update additional db users
-  command: echo "{{ item.name }}"
