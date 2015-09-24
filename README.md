@@ -70,7 +70,7 @@ database or users.
 
       - hosts: all
         roles:
-        - {role: mariadb, mariadb_root_db_pass: foobar, mariadb_db: none, mariadb_users: none }
+        - {role: mariadb, mariadb_root_db_pass: foobar }
 
 2) Install mariadb Server and create 2 databases and 2 users.
 

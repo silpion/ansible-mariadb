@@ -97,7 +97,6 @@
     host={{ item.host|default("localhost") }}
     append_privs={{ item.append_privs|default("no") }}
   with_items: mariadb_users_create
-  when: mariadb_users_create != 'none'
 
 - name: Create the replication users
   tags: mariadb
