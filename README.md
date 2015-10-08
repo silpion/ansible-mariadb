@@ -65,7 +65,7 @@ their default value which will be used if no other value is specified.
         databases: 'all'          # Optional: The databases to dump. This variable must either be a list of databases or the keyword 'all'
         dayofweek: '*'            # Optional: The weekday(s) to dump at. Use cron notation here
         hour: '4'                 # Optional: The hour to execute job at. Use cron notation here
-        destinationdir: '/backup' # Optional: The directory to put the backups in. Filename is $backupjobname-$year-$month-$day-$hour-$minute.sql.gz
+        destinationdir: '/backup' # Optional: The directory to put the backups in. Filename is $year-$month-$day-$hour-$minute-$backupjobname.sql.gz
 
 Examples
 --------
