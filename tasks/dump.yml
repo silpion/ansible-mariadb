@@ -1,13 +1,11 @@
 ---
-- name: Assert required dump variables exist
+- name: Assert required backupjob variables exist
   tags:
     - mariadb
     - mariadb_dump
+  with_items: mariadb_backupjobs
   assert:
-    that:
-      - mariadb_dump_userpassword is defined
-      - mariadb_dump_databases is defined
-      - mariadb_dump_destinationdir is defined
+    that: item.name is defined
 
 - name: Include dump vars
   tags:
@@ -20,9 +18,10 @@
     - mariadb
     - mariadb_dump
   become: true
+  with_items: mariadb_backupjobs
   file:
     state=directory
-    path="{{ mariadb_dump_destinationdir }}"
+    path="{{ item.destinationdir|default(mariadb_backup_defaultdestinationdir) }}"
     owner=0
     group=0
     mode=0755
@@ -32,9 +31,10 @@
     - mariadb
     - mariadb_dump
   become: true
+  with_items: mariadb_backupjobs
   template:
     src=mariadb_dump.j2
-    dest="{{ mariadb_dump_scriptfile }}"
+    dest="{{ mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
     owner=0
     group=0
     mode=0700
@@ -44,10 +44,11 @@
     - mariadb
     - mariadb_dump
   become: true
+  with_items: mariadb_backupjobs
   cron:
     state=present
-    job="{{ mariadb_dump_scriptfile }}"
-    name=mariadb_backup
+    job="{{mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
+    name="mariadb_backup_{{ item.name }}"
     minute=0
-    hour="{{ mariadb_dump_crontime.hour }}"
-    weekday="{{ mariadb_dump_crontime.dayofweek }}"
+    hour="{{ item.hour }}"
+    weekday="{{ item.dayofweek }}"
