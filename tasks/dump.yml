@@ -7,6 +7,16 @@
   assert:
     that: item.name is defined
 
+- name: Template dump vars file
+  tags:
+    - mariadb
+    - mariadb_dump
+  when: mariadb_backupjobs|length > 0
+  local_action: template
+  args:
+    src: mariadb_dump_localvars.j2
+    dest: "{{ role_path }}/vars/mariadb_dump.yml"
+
 - name: Include dump vars
   tags:
     - mariadb
