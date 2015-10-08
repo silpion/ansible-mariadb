@@ -8,10 +8,7 @@
   tags: mariadb
   include_vars: "{{ ansible_os_family }}.yml"
 
-- name: Include MariaDB dump tasks
-  tags: mariadb
-  when: mariadb_enable_dump
-  include: dump.yml
+- include: dump.yml
 
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb

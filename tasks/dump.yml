@@ -11,6 +11,7 @@
   tags:
     - mariadb
     - mariadb_dump
+  when: mariadb_backupjobs|length > 0
   include_vars: mariadb_dump.yml
 
 - name: Create mariadb_dump_destinationdir
@@ -50,5 +51,5 @@
     job="{{mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
     name="mariadb_backup_{{ item.name }}"
     minute=0
-    hour="{{ item.hour }}"
-    weekday="{{ item.dayofweek }}"
+    hour="{{ item.hour|default('4') }}"
+    weekday="{{ item.dayofweek|default('*') }}"
