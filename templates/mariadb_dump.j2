@@ -22,18 +22,21 @@ mysql_dump(){
         done
 }
 
-
+{% if item.autodeleteafter %}
 remove_old_files(){
+        echo -e "\nREMOVE files older than {{ item.autodeleteafter }} days\n"
         for database in ${db[*]};do
-                echo -e "\nREMOVE files older than 2 days\n"
-                $FIND $db_dir -name "$database-dump*" -mtime +1 -exec rm {} \;
+                $FIND $db_dir -name "*{{ item.name }}*" -mtime +{{ item.autodeleteafter }} -exec rm {} \;
         done
 }
+{% endif %}
 
 set_perm(){
         chmod -R 400 $db_dir/*
 }
 
 mysql_dump
+{% if item.autodeleteafter %}
 remove_old_files
+{% endif %}
 set_perm

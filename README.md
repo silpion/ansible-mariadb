@@ -66,6 +66,7 @@ their default value which will be used if no other value is specified.
         dayofweek: '*'            # Optional: The weekday(s) to dump at. Use cron notation here
         hour: '4'                 # Optional: The hour to execute job at. Use cron notation here
         destinationdir: '/backup' # Optional: The directory to put the backups in. Filename is $year-$month-$day-$hour-$minute-$backupjobname.sql.gz
+        autodeleteafter: false    # Optional: Amount of days after which backups will be deleted. False means backups never get deleted
 
 Examples
 --------

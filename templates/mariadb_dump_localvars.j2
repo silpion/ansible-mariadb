@@ -15,6 +15,7 @@ mariadb_roleinternal_backupjobs:
     dayofweek: "{{ item.dayofweek|default('*') }}"
     hour: "{{ item.hour|default('4')}}"
     destinationdir: {{ item.destinationdir|default(mariadb_backup_defaultdestinationdir)}}
+    autodeleteafter: {{ item.autodeleteafter|default('false') }}
 {% endfor %}
 
 mariadb_users_create: {% raw %}"{{ mariadb_users + mariadb_backupusers }}"{% endraw %}
