@@ -61,6 +61,7 @@ their default value which will be used if no other value is specified.
 
     mariadb_backupjobs:
       - name: all_dbs             # Mandatory, must be no longer than 13 chars, else the role will fail on creating the users
+        backupuserpass: 'pw'      # Mandatory
         databases: 'all'          # Optional: The databases to dump. This variable must either be a list of databases or the keyword 'all'
         dayofweek: '*'            # Optional: The weekday(s) to dump at. Use cron notation here
         hour: '4'                 # Optional: The hour to execute job at. Use cron notation here

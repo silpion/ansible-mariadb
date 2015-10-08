@@ -4,6 +4,7 @@
   vars:
     mariadb_backupjobs:
       - name: all_dbs
+        backupuserpass: foobar
     mariadb_db:
       - name: foo
         replicate: no

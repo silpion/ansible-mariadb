@@ -5,7 +5,9 @@
     - mariadb_dump
   with_items: mariadb_backupjobs
   assert:
-    that: item.name is defined
+    that:
+      - item.name is defined
+      - item.backupuserpass is defined
 
 - name: Template dump vars file
   tags:
@@ -16,6 +18,8 @@
   args:
     src: mariadb_dump_localvars.j2
     dest: "{{ role_path }}/vars/mariadb_dump.yml"
+    owner: "{{ lookup('env', 'USER') }}"
+    mode: 0600
 
 - name: Include dump vars
   tags:
