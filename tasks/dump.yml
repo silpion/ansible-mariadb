@@ -37,7 +37,7 @@
   with_items: mariadb_roleinternal_backupjobs
   file:
     state=directory
-    path="{{ item.destinationdir|default(mariadb_backup_defaultdestinationdir) }}"
+    path="{{ item.destinationdir }}"
     owner=0
     group=0
     mode=0755
@@ -66,5 +66,5 @@
     job="{{mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
     name="mariadb_backup_{{ item.name }}"
     minute=0
-    hour="{{ item.hour|default('4') }}"
-    weekday="{{ item.dayofweek|default('*') }}"
+    hour="{{ item.hour }}"
+    weekday="{{ item.dayofweek }}"

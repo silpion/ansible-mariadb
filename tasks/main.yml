@@ -85,7 +85,7 @@
 
 - name: Create the database users
   tags: mariadb
-  #no_log: true
+  no_log: true
   mysql_user:
     name={{ item.name }}
     password={{ item.pass|default("foobar") }}
