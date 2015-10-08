@@ -1,7 +1,0 @@
-mariadb_backupusers: "{% for item in mariadb_backupjobs %}
-  - name: mariadb_backup_{{ item.name }}
-    pass: {{ lookup('password', '/dev/urandom') }}
-    priv: {% if item.databases == 'all' %}'*.*:SELECT,'SHOW VIEW',TRIGGER{% else %}{% for db in item.databases %}{{ db.name }}.*:SELECT,'SHOW VIEW',TRIGGER{% if not loop.last %},{% endif %}{% endfor %}{% endif %}
-{% endfor %}"
-
-mariadb_users_create: "{{ mariadb_backupusers + mariadb_backupuser }}"
