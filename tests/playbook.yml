@@ -5,10 +5,25 @@
     mariadb_backupjobs:
       - name: all_dbs
         backupuserpass: foobar
+      - name: foobar
+        backupuserpass: bar
+        databases:
+          - foo
+          - bar
     mariadb_db:
       - name: foo
         replicate: no
+      - name: bar
     mariadb_root_db_pass: foobar
   roles:
     - { role: ansible-mariadb, mariadb_backupjobs: [] }
     - { role: ansible-mariadb }
+  tasks:
+    - name: Test if backupscript execution is successful
+      tags:
+        - mariadb
+        - dump
+        - tests
+      become: true
+      with_items: mariadb_backupjobs
+      command: '/usr/local/sbin/mariadb_backup_{{ item.name }}.sh'
