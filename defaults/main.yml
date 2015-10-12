@@ -1,5 +1,4 @@
 ---
-
 mariadb_port: 3306
 mariadb_bind_address: "127.0.0.1"
 
@@ -15,9 +14,6 @@ mariadb_db_id: 0
 mariadb_config: []
 mariadb_confd_file: "custom.cnf"
 
-mariadb_enable_dump: false
-mariadb_dump_username: 'mariadb_dump'
-mariadb_dump_scriptfile: '/usr/local/sbin/mariadb_dump'
-mariadb_dump_crontime:
-  hour: 4
-  dayofweek: '*'
+mariadb_backupjobs: []
+mariadb_backup_defaultdestinationdir: '/backup'
+mariadb_backup_scriptbasepath: '/usr/local/sbin'
