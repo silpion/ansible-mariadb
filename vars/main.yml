@@ -2,3 +2,5 @@
 env:
  RUNLEVEL: 1
 
+## This needs to be empty at start of run and will be filled later
+mariadb_roleinternal_backupjobs: []

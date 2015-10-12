@@ -1,13 +1,14 @@
 #!/bin/bash
 
-#Array, may contain multiple databases
-db=({% for db in mariadb_dump_databases %}{{ db }} {% endfor %})
-db_user="{{ mariadb_dump_username }}"
-db_password="{{ mariadb_dump_userpassword }}"
+set -euo pipefail
 
-db_dir="{{ mariadb_dump_destinationdir }}"
-db_file="dump-$(date +%F-%H-%M).sql.gz"
-db_file_all="mysql-dump.sql.gz"
+#Array, may contain multiple databases
+db=({% if item.databases == 'all' %}'--all-databases'{% else %}{% for db in item.databases %}{{ db }} {% endfor %}{% endif %})
+db_user="{{ item.username }}"
+db_password="{{ item.pass }}"
+
+db_dir="{{ item.destinationdir }}"
+db_file="$(date +%F-%H-%M)-{{ item.name }}.sql.gz"
 
 MYSQLDUMP="/usr/bin/mysqldump"
 GZIP="/bin/gzip"
@@ -17,22 +18,25 @@ FIND="/usr/bin/find"
 mysql_dump(){
         for database in ${db[*]};do
                 echo -e "\nDB $database is beeing backupted\n"
-                $MYSQLDUMP -u $db_user -p${db_password} --single-transaction --quick $database | $GZIP > $db_dir/$database-$db_file
+                $MYSQLDUMP -u $db_user -p${db_password} --single-transaction --quick $database | $GZIP > $db_dir/$db_file
         done
 }
 
-
+{% if item.autodeleteafter %}
 remove_old_files(){
+        echo -e "\nREMOVE files older than {{ item.autodeleteafter }} days\n"
         for database in ${db[*]};do
-                echo -e "\nREMOVE files older than 2 days\n"
-                $FIND $db_dir -name "$database-dump*" -mtime +1 -exec rm {} \;
+                $FIND $db_dir -name "*{{ item.name }}*" -mtime +{{ item.autodeleteafter }} -exec rm {} \;
         done
 }
+{% endif %}
 
 set_perm(){
         chmod -R 400 $db_dir/*
 }
 
 mysql_dump
+{% if item.autodeleteafter %}
 remove_old_files
+{% endif %}
 set_perm

@@ -19,3 +19,6 @@
 *.swp
 .vagrant
 envvars-vagrant
+
+# Role specific
+vars/mariadb_dump.yml
