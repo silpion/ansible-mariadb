@@ -1,3 +1,27 @@
+# 1.3.0
+
+Alvaro Aleman (14):
+
+* Update Readme
+* Rework dump tasks file
+* Fix backupser creation
+* Add dumpvars to gitignore since it gets locally created
+* Dynamically create dumpvars using local_action: template
+* Add mariadb_backupjobs.backupuserpass directive
+* Add more tests
+* Fix backupscript template
+* Disable autodeletion of backups by default
+* Remove obsolete default filters
+* Add always_run: true to local template task
+* Fix templating
+* Fix codingstyle, add task name for dump include
+* Update releasescript
+
+Ruslan Tumarkin (2):
+
+* Add no_log and fix mariadb_users_create if empty on create users task
+* Removed when check from create db users task
+
 # 1.1.0
 
 Alvaro Aleman (4):

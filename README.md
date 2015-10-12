@@ -51,16 +51,22 @@ them are as follows:
       # A unique id for the mariadb server (used in replication):
       mariadb_db_id: 7
 
-# MariaDB dump
+# MariaDB Backup/Dump
 
-* mariadb_enable_dump: Wether to execute MariaDB dump tasks (boolean, default: false)
-* mariadb_dump_username: Name for the dump user (String, default: mariadb_dump)
-* mariadb_dump_userpassword: Password for the dump user (String, **mandatory**)
-* mariadb_dump_destinationdir: The directory to dump to (String, **mandatory**)
-* mariadb_dump_databases: A list of the databases to dump (List, **mandatory**)
-* mariadb_dump_crontime.hour: Hour at which to run the dump cronjob (String, refer to cron manual for details, default: '4')
-* mariadb_dump_crontime.dayofweek: Day of week at which to run the dump cronjob (String, refer to cron manual for details, default: '*')
-* mariadb_dump_scriptfile: File to store the backupscript in (String, default: '/usr/local/sbin/mariadb_dump')
+This role allows to create backupjobs for your databases. This requires a list called
+``mariadb_backupjobs``. The default value for that list is ``[]``.
+
+Below is a sample. All fields that are marked ``optional`` contain
+their default value which will be used if no other value is specified.
+
+    mariadb_backupjobs:
+      - name: all_dbs             # Mandatory, must be no longer than 13 chars, else the role will fail on creating the users
+        backupuserpass: 'pw'      # Mandatory
+        databases: 'all'          # Optional: The databases to dump. This variable must either be a list of databases or the keyword 'all'
+        dayofweek: '*'            # Optional: The weekday(s) to dump at. Use cron notation here
+        hour: '4'                 # Optional: The hour to execute job at. Use cron notation here
+        destinationdir: '/backup' # Optional: The directory to put the backups in. Filename is $year-$month-$day-$hour-$minute-$backupjobname.sql.gz
+        autodeleteafter: false    # Optional: Amount of days after which backups will be deleted. False means backups never get deleted
 
 Examples
 --------
@@ -70,7 +76,7 @@ database or users.
 
       - hosts: all
         roles:
-        - {role: mariadb, mariadb_root_db_pass: foobar, mariadb_db: none, mariadb_users: none }
+        - {role: mariadb, mariadb_root_db_pass: foobar }
 
 2) Install mariadb Server and create 2 databases and 2 users.
 
