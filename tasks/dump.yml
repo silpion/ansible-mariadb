@@ -16,6 +16,7 @@
   when: mariadb_backupjobs|length > 0
   changed_when: false
   local_action: template
+  always_run: true
   args:
     src: mariadb_dump_localvars.j2
     dest: "{{ role_path }}/vars/mariadb_dump.yml"
