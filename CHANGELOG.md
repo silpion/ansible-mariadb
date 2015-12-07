@@ -1,3 +1,11 @@
+# 1.3.1
+
+
+* Add envvars for centos/7 vagrant box
+* Update TDD functionaltiy from ansible-generator
+* Use host-specific prefix for local dump vars file
+
+Alvaro Aleman (3):
 # 1.3.0
 
 Alvaro Aleman (14):
