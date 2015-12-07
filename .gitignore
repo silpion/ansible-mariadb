@@ -21,4 +21,5 @@
 envvars-vagrant
 
 # Role specific
-vars/mariadb_dump.yml
+vars/temp/*
+!vars/temp/.gitkeep

@@ -19,7 +19,7 @@
   local_action: template
   args:
     src: mariadb_dump_localvars.j2
-    dest: "{{ role_path }}/vars/mariadb_dump.yml"
+    dest: "{{ role_path }}/vars/temp/{{ inventory_hostname }}_mariadb_dump.yml"
     owner: "{{ lookup('env', 'USER') }}"
     mode: 0600
 
@@ -28,7 +28,7 @@
     - mariadb
     - mariadb_dump
   when: mariadb_backupjobs|length > 0
-  include_vars: mariadb_dump.yml
+  include_vars: "temp/{{ inventory_hostname }}_mariadb_dump.yml"
 
 - name: Create mariadb_dump_destinationdir
   tags:
