@@ -16,6 +16,8 @@
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb
   with_items: mariadb_pkgs
+  when: ansible_os_family == 'RedHat'
+  become: true
   yum:
     state: present
     name: "{{ item }}"
@@ -23,8 +25,8 @@
 - name: Install the mariadb packages in Debian derivatives
   tags: mariadb
   with_items: mariadb_pkgs
-  environment: env
   when: ansible_os_family == 'Debian'
+  become: true
   apt:
     state: present
     name: "{{ item }}"
@@ -33,12 +35,14 @@
 - name: Copy the my.cnf file
   tags: mariadb
   notify: restart mariadb
+  become: true
   template:
     src: "my.cnf.{{ ansible_os_family }}.j2"
     dest: "{{ mariadb_conf_dir }}/my.cnf"
 
 - name: Start and enable the mariadb service
   tags: mariadb
+  become: true
   service:
     state: started
     name: "{{ mariadb_service }}"
@@ -51,6 +55,7 @@
    - 127.0.0.1
    - ::1
    - localhost
+  become: true
   mysql_user:
     name: root
     host: "{{ item }}"
@@ -58,6 +63,7 @@
 
 - name: Copy .my.cnf file with root password credentials
   tags: mariadb
+  become: true
   template:
     src: .my.cnf.j2
     dest: /root/.my.cnf
@@ -68,13 +74,15 @@
   with_items:
    - localhost
    - "{{ ansible_hostname }}"
+  become: true
   mysql_user:
     state: absent
     name: ""
     host: "{{ item }}"
 
-- name: remove the test database
+- name: Remove the test database
   tags: mariadb
+  become: true
   mysql_db:
     state: absent
     name: test
@@ -82,6 +90,7 @@
 - name: Create the databases
   tags: mariadb
   with_items: mariadb_db
+  become: true
   mysql_db:
     state: "{{ item.state|default('present') }}"
     name: "{{ item.name }}"
@@ -98,6 +107,7 @@
   tags: mariadb
   no_log: true
   with_items: mariadb_users_create
+  become: true
   mysql_user:
     state: present
     name: "{{ item.name }}"
@@ -109,6 +119,7 @@
 - name: Create the replication users
   tags: mariadb
   with_items: mariadb_repl_user
+  become: true
   when: mariadb_repl_role == 'master'
   mysql_user:
     state: present
@@ -124,11 +135,13 @@
   changed_when: false
   always_run: true
   when: mariadb_repl_role == 'slave'
+  become: true
   mysql_replication:
     mode: getslave
 
 - name: Ensure the hostname entry for master is available for the client
   tags: mariadb
+  become: true
   when:
     - slave|failed
     - mariadb_repl_role == 'slave'
@@ -143,6 +156,7 @@
   tags: mariadb
   register: repl_stat
   delegate_to: "{{ mariadb_repl_master }}"
+  become: true
   when:
     - slave|failed
     - mariadb_repl_role == 'slave'
@@ -152,6 +166,7 @@
 
 - name: Change the master in slave to start the replication
   tags: mariadb
+  become: true
   when:
     - slave|failed
     - mariadb_repl_role == 'slave'
@@ -168,6 +183,7 @@
   tags: mariadb
   notify: restart mariadb
   with_items: mariadb_config
+  become: true
   ini_file:
     dest: "{{ mariadb_confd_dir }}/{{ mariadb_confd_file }}"
     section: "{{ item.section }}"

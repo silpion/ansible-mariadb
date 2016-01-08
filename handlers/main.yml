@@ -1,4 +1,7 @@
 ---
 - name: restart mariadb
   tags: mariadb
-  service: name={{ mariadb_service }} state=restarted
+  become: true
+  service:
+    name: "{{ mariadb_service }}"
+    state: restarted
