@@ -34,7 +34,7 @@
 
 - name: Copy the my.cnf file
   tags: mariadb
-  notify: restart mariadb
+  notify: service restart mariadb
   become: true
   template:
     src: "my.cnf.{{ ansible_os_family }}.j2"
@@ -181,7 +181,7 @@
 
 - name: Apply additional mariadb configuration
   tags: mariadb
-  notify: restart mariadb
+  notify: service restart mariadb
   with_items: mariadb_config
   become: true
   ini_file:

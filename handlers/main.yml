@@ -1,5 +1,5 @@
 ---
-- name: restart mariadb
+- name: service restart mariadb
   tags: mariadb
   become: true
   service:
