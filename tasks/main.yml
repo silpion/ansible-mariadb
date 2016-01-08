@@ -10,6 +10,7 @@
 
 - name: Include MariaDB dump tasks
   tags: mariadb
+  when: mariadb_backupjobs|length > 0
   include: dump.yml
 
 - name: Install the mariadb packages in Redhat derivatives
