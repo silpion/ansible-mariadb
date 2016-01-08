@@ -14,123 +14,161 @@
 
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb
-  yum: name={{ item }} state=installed
-  with_items: "mariadb_pkgs_{{ ansible_distribution_major_version }}"
-  when: ansible_os_family == 'RedHat'
+  with_items: mariadb_pkgs
+  yum:
+    state: present
+    name: "{{ item }}"
 
 - name: Install the mariadb packages in Debian derivatives
   tags: mariadb
-  apt: name={{ item }} state=installed update_cache=yes
   with_items: mariadb_pkgs
   environment: env
   when: ansible_os_family == 'Debian'
+  apt:
+    state: present
+    name: "{{ item }}"
+    update_cache: true
 
 - name: Copy the my.cnf file
   tags: mariadb
-  template: src=my.cnf.{{ ansible_os_family }}.j2 dest={{ mariadb_conf_dir }}/my.cnf
-  notify:
-   - restart mariadb
+  notify: restart mariadb
+  template:
+    src: "my.cnf.{{ ansible_os_family }}.j2"
+    dest: "{{ mariadb_conf_dir }}/my.cnf"
 
-- name: Start the mariadb services Redhat
+- name: Start and enable the mariadb service
   tags: mariadb
-  service: name={{ mariadb_service }} state=started enabled=yes
+  service:
+    state: started
+    name: "{{ mariadb_service }}"
+    enabled: true
 
-- name: update mariadb root password for all root accounts
+- name: Update mariadb root password for all root accounts
   tags: mariadb
-  mysql_user: name=root host={{ item }} password={{ mariadb_root_db_pass }}
   with_items:
    - "{{ ansible_hostname }}"
    - 127.0.0.1
    - ::1
    - localhost
-  when: ansible_hostname != 'localhost'
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_db_pass }}"
 
-- name: update mariadb root password for all root accounts
+- name: Copy .my.cnf file with root password credentials
   tags: mariadb
-  mysql_user: name=root host={{ item }} password={{ mariadb_root_db_pass }}
-  with_items:
-   - 127.0.0.1
-   - ::1
-   - localhost
-  when: ansible_hostname == 'localhost'
+  template:
+    src: .my.cnf.j2
+    dest: /root/.my.cnf
+    mode: 0600
 
-- name: copy .my.cnf file with root password credentials
+- name: Ensure anonymous users are not in the database
   tags: mariadb
-  template: src=.my.cnf.j2 dest=~/.my.cnf mode=0600
-
-- name: ensure anonymous users are not in the database
-  tags: mariadb
-  mysql_user: name="" host={{ item }} state=absent
   with_items:
    - localhost
    - "{{ ansible_hostname }}"
+  mysql_user:
+    state: absent
+    name: ""
+    host: "{{ item }}"
 
 - name: remove the test database
   tags: mariadb
-  mysql_db: name=test state=absent
+  mysql_db:
+    state: absent
+    name: test
 
 - name: Create the databases
   tags: mariadb
-  mysql_db:
-    name={{ item.name }}
-    collation={{ item.collation|default("") }}
-    encoding={{ item.encoding|default("") }}
-    login_host={{ item.login_host|default('localhost') }}
-    login_password={{ item.login_password|default(mariadb_root_db_pass) }}
-    login_port={{ item.login_port|default(mariadb_port) }}
-    login_unix_socket={{ item.login_unix_socket|default("") }}
-    login_user={{ item.login_user|default("root") }}
-    target={{ item.target|default("") }}
-    state={{ item.state|default('present') }}
   with_items: mariadb_db
-  when: mariadb_db|lower() != 'none'
+  mysql_db:
+    state: "{{ item.state|default('present') }}"
+    name: "{{ item.name }}"
+    collation: "{{ item.collation|default('') }}"
+    encoding: "{{ item.encoding|default('') }}"
+    login_host: "{{ item.login_host|default('localhost') }}"
+    login_password: "{{ item.login_password|default(mariadb_root_db_pass) }}"
+    login_port: "{{ item.login_port|default(mariadb_port) }}"
+    login_unix_socket: "{{ item.login_unix_socket|default('') }}"
+    login_user: "{{ item.login_user|default('root') }}"
+    target: "{{ item.target|default('') }}"
 
 - name: Create the database users
   tags: mariadb
   no_log: true
-  mysql_user:
-    name={{ item.name }}
-    password={{ item.pass|default("foobar") }}
-    priv={{ item.priv|default("*.*:ALL") }}
-    state=present
-    host={{ item.host|default("localhost") }}
-    append_privs={{ item.append_privs|default("no") }}
   with_items: mariadb_users_create
+  mysql_user:
+    state: present
+    name: "{{ item.name }}"
+    password: "{{ item.pass|default('foobar') }}"
+    priv: "{{ item.priv|default('*.*:ALL') }}"
+    host: "{{ item.host|default('localhost') }}"
+    append_privs: "{{ item.append_privs|default('no') }}"
 
 - name: Create the replication users
   tags: mariadb
-  mysql_user: name={{ item.name }}  host="%" password={{ item.pass|default("foobar") }}
-                priv=*.*:"REPLICATION SLAVE" state=present
   with_items: mariadb_repl_user
   when: mariadb_repl_role == 'master'
+  mysql_user:
+    state: present
+    name: "{{ item.name }}"
+    host: "%"
+    password: "{{ item.pass|default('foobar') }}"
+    priv: "*.*:'REPLICATION SLAVE'"
 
 - name: Check if slave is already configured for replication
   tags: mariadb
-  mysql_replication: mode=getslave
-  ignore_errors: true
   register: slave
+  ignore_errors: true
+  changed_when: false
+  always_run: true
   when: mariadb_repl_role == 'slave'
+  mysql_replication:
+    mode: getslave
 
-- name: Ensure the hostname entry for master is available for the client.
+- name: Ensure the hostname entry for master is available for the client
   tags: mariadb
-  lineinfile: dest=/etc/hosts regexp="{{ mariadb_repl_master }}" line="{{ mariadb_repl_master + "   " +  hostvars[mariadb_repl_master].ansible_default_ipv4.address }}" state=present
-  when: slave|failed and mariadb_repl_role == 'slave' and mariadb_repl_master is defined
+  when:
+    - slave|failed
+    - mariadb_repl_role == 'slave'
+    - mariadb_repl_master is defined
+  lineinfile:
+    state: present
+    dest: /etc/hosts
+    regexp: "{{ mariadb_repl_master }}"
+    line: "{{ mariadb_repl_master + '   ' +  hostvars[mariadb_repl_master].ansible_default_ipv4.address }}"
 
 - name: Get the current master servers replication status
   tags: mariadb
-  mysql_replication: mode=getmaster
-  delegate_to: "{{ mariadb_repl_master }}"
   register: repl_stat
-  when: slave|failed and mariadb_repl_role == 'slave' and mariadb_repl_master is defined
+  delegate_to: "{{ mariadb_repl_master }}"
+  when:
+    - slave|failed
+    - mariadb_repl_role == 'slave'
+    - mariadb_repl_master is defined
+  mysql_replication:
+    mode: getmaster
 
 - name: Change the master in slave to start the replication
   tags: mariadb
-  mysql_replication: mode=changemaster master_host={{ mariadb_repl_master }} master_log_file={{ repl_stat.File }} master_log_pos={{ repl_stat.Position }} master_user={{ mariadb_repl_user[0].name }} master_password={{ mariadb_repl_user[0].pass }}
-  when: slave|failed and mariadb_repl_role == 'slave' and mariadb_repl_master is defined
+  when:
+    - slave|failed
+    - mariadb_repl_role == 'slave'
+    - mariadb_repl_master is defined
+  mysql_replication:
+    mode: changemaster
+    master_host: "{{ mariadb_repl_master }}"
+    master_log_file: "{{ repl_stat.File }}"
+    master_log_pos: "{{ repl_stat.Position }}"
+    master_user: "{{ mariadb_repl_user[0].name }}"
+    master_password: "{{ mariadb_repl_user[0].pass }}"
 
 - name: Apply additional mariadb configuration
   tags: mariadb
-  ini_file: dest="{{ mariadb_confd_dir }}/{{ mariadb_confd_file }}" section="{{ item.section }}" option="{{ item.option }}" value="{{ item.value }}"
+  notify: restart mariadb
   with_items: mariadb_config
-  notify:
-   - restart mariadb
+  ini_file:
+    dest: "{{ mariadb_confd_dir }}/{{ mariadb_confd_file }}"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
