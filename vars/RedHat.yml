@@ -1,17 +1,19 @@
 ---
-mariadb_pkgs_6:
-  - libselinux-python
-  - mariadb-server
-  - mysql-python
-
-mariadb_pkgs_7:
-  - libselinux-python
-  - mariadb-server
-  - MySQL-python
+mariadb_packagelist:
+  '6':
+    - libselinux-python
+    - mariadb-server
+    - mysql-python
+  '7':
+    - libselinux-python
+    - mariadb-server
+    - MySQL-python
 
 mariadb_servicename:
   '6': 'mysqld'
   '7': 'mariadb'
+
+mariadb_pkgs: "{{ mariadb_packagelist[ansible_distribution_major_version]}}"
 
 mariadb_service: "{{ mariadb_servicename[ansible_distribution_major_version] }}"
 

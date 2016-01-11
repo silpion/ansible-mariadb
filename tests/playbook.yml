@@ -1,6 +1,5 @@
 ---
 - hosts: all
-  become: true
   vars:
     mariadb_backupjobs:
       - name: all_dbs
