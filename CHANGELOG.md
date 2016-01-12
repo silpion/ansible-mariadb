@@ -1,4 +1,16 @@
+# 2.0.1
+
+Alvaro Aleman (4):
+
+* Make role Ansible2 compatible
+* Make backup tasks include conditional
+* Use become inside role
+* Rename service handler to fit style guide
+
 # 2.0.0
+
+This release forgot to integrate changes described below.
+2.0.1 really integrates them.
 
 Alvaro Aleman (4):
 
