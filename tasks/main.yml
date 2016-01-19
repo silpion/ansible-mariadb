@@ -93,15 +93,15 @@
   become: true
   mysql_db:
     state: "{{ item.state|default('present') }}"
-    name: "{{ item.name }}"
-    collation: "{{ item.collation|default('') }}"
-    encoding: "{{ item.encoding|default('') }}"
+    name: "{{ item.name|default(item) }}"
+    collation: "{{ item.collation|default(omit) }}"
+    encoding: "{{ item.encoding|default(omit) }}"
     login_host: "{{ item.login_host|default('localhost') }}"
     login_password: "{{ item.login_password|default(mariadb_root_db_pass) }}"
     login_port: "{{ item.login_port|default(mariadb_port) }}"
-    login_unix_socket: "{{ item.login_unix_socket|default('') }}"
+    login_unix_socket: "{{ item.login_unix_socket|default(omit) }}"
     login_user: "{{ item.login_user|default('root') }}"
-    target: "{{ item.target|default('') }}"
+    target: "{{ item.target|default(omit) }}"
 
 - name: Create the database users
   tags: mariadb
