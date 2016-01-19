@@ -14,6 +14,7 @@
       - name: foo
         replicate: no
       - name: bar
+      - foobar
     mariadb_root_db_pass: foobar
   roles:
     - { role: ansible-mariadb, mariadb_backupjobs: [] }
