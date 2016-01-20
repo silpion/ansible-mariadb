@@ -1,126 +1,101 @@
-mariadb Server
-============
+# ansible-mariadb
 
-This roles helps to install mariadb Server across RHEL and Ubuntu variants.
-Apart from installing the mariadb Server, it applies basic hardening, like
-securing the root account with password, and removing test databases. The role
-can also be used to add databases to the mariadb server and create users in the
-database. It also supports configuring the databases for replication--both
-master and slave can be configured via this role.
+## Description
 
-Requirements
-------------
+This role helps to install and configure the mariadb server and applies
+basic hardening to it. The role can also be used to configure database
+backups and/or replication.
 
-This role requires Ansible 1.4 or higher, and platform requirements are listed
-in the metadata file.
+## Requirements
 
-Role Variables
---------------
+This role is tested on the platforms listed below but may work on others:
 
-The variables that can be passed to this role and a brief description about
-them are as follows:
+* EL 7
+* Ubuntu 14
 
-      mariadb_root_db_pass: foobar       # The root DB password, **mandatory**
-      mariadb_port: 3306                 # The port for mariadb server to listen
-      mariadb_bind_address: "0.0.0.0"    # The bind address for mariadb server, default: 127.0.0.1
 
-      # A list that has all the databases to be
-      # created and their replication status:
-      mariadb_db:
-           - name: foo
-             replicate: yes
-           - name: bar
-             replicate: no
+## Role Variables
 
-      # A list of the mariadb users to be created
-      # and their password and privileges:
-      mariadb_users:
-           - name: benz
-             pass: foobar
-             priv: "*.*:ALL"
+A list of available variables. Optional variables are shown with their default values.
 
-      # If the database is replicated the users
-      # to be used for replication:
-      mariadb_repl_user:
-        - name: repl
-          pass: foobar
+### Global
 
-      # The role of this server in replication:
-      mariadb_repl_role: master
+```yml
+mariadb_root_db_pass: foobar             # Mandatory: Root db password
+mariadb_port: 3306                       # Optional
+mariadb_bind_address: 127.0.0.1          # Optional
+mariadb_confd_dir: platform specific     # Optional, used for mariadb_config. For default see vars/{{ ansible_os_family }}.yml
+mariadb_confd_file: platform specific    # Optional, used for mariadb_config. For default see vars/{{ ansible_os_family }}.yml
 
-      # A unique id for the mariadb server (used in replication):
-      mariadb_db_id: 7
+mariadb_db:                              # Optional, default: []
+  - foo                                  # The name can be either passed as string or via the name key as shown below
+  - name: bar                            # If a db defined as dictionary, any key available for the mysql_db module can be used here
+    replicate: false                     # Optional, only has an effect if replication is configured
 
-# MariaDB Backup/Dump
+mariadb_users:                           # Optional
+  - name: benz                           # Mandatory
+    pass: foobar                         # Mandatory
+    priv: "*.*:ALL"                      # Optional
+    host: 'localhost'                    # Optional
+    append_privs: false                  # Optional, whether to append privileges
 
-This role allows to create backupjobs for your databases. This requires a list called
-``mariadb_backupjobs``. The default value for that list is ``[]``.
+mariadb_config:                          # Optional, ini file for custom settings. Default: []
+  - section: mysection
+    option: myoption
+    value: myvalue
+```
 
-Below is a sample. All fields that are marked ``optional`` contain
-their default value which will be used if no other value is specified.
+### Backup/Dump
 
-    mariadb_backupjobs:
-      - name: all_dbs             # Mandatory, must be no longer than 13 chars, else the role will fail on creating the users
-        backupuserpass: 'pw'      # Mandatory
-        databases: 'all'          # Optional: The databases to dump. This variable must either be a list of databases or the keyword 'all'
-        dayofweek: '*'            # Optional: The weekday(s) to dump at. Use cron notation here
-        hour: '4'                 # Optional: The hour to execute job at. Use cron notation here
-        destinationdir: '/backup' # Optional: The directory to put the backups in. Filename is $year-$month-$day-$hour-$minute-$backupjobname.sql.gz
-        autodeleteafter: false    # Optional: Amount of days after which backups will be deleted. False means backups never get deleted
+```yml
+mariadb_backupjobs:                      # Optional, default: []
+  - name: all_dbs                        # Mandatory, must be no longer than 13 chars, else the role will fail on creating the users
+    backupuserpass: 'pw'                 # Mandatory
+    databases: 'all'                     # Optional: The databases to dump. This variable must either be a list of databases or the keyword 'all'
+    dayofweek: '*'                       # Optional: The weekday(s) to dump at. Use cron notation here
+    hour: '4'                            # Optional: The hour to execute job at. Use cron notation here
+    destinationdir: '/backup'            # Optional: The directory to put the backups in. Filename is $year-$month-$day-$hour-$minute-$backupjobname.sql.gz
+    autodeleteafter: false               # Optional: Amount of days after which backups will be deleted. False means backups never get deleted
+mariadb_backup_scriptbasepath: /usr/local/sbin # Optional: Folder to store the backupscripts in
+mariadb_backup_defaultdestinationdir: /backup  # Optional: Folder to store backups that don't have a destionationdir attribute in
+```
 
-Examples
---------
 
-1) Install mariadb Server and set the root password, but don't create any
-database or users.
+### Replication
 
-      - hosts: all
-        roles:
-        - {role: mariadb, mariadb_root_db_pass: foobar }
-
-2) Install mariadb Server and create 2 databases and 2 users.
-
-      - hosts: all
-        roles:
-         - {role: mariadb, mariadb_db: [{name: benz},
-                                    {name: benz2}],
-            mariadb_users: [{name: ben3, pass: foobar, priv: "*.*:ALL"},
-                          {name: ben2, pass: foo}] }
-
-Note: If users are specified and password/privileges are not specified, then
-default values are set.
-
-3) Install mariadb Server and create 2 databases and 2 users and configure the
-database as replication master with one database configured for replication.
-
-      - hosts: all
-        roles:
-         - {role: mariadb, mariadb_db: [{name: benz, replicate: yes },
-                                    { name: benz2, replicate: no}],
-                         mariadb_users: [{name: ben3, pass: foobar, priv: "*.*:ALL"},
-                                       {name: ben2, pass: foo}],
-                         mariadb_repl_user: [{name: repl, pass: foobar}] }
-
-4) A fully installed/configured mariadb Server with master and slave
-replication.
-
-      - hosts: master
-        roles:
-         - {role: mariadb, mariadb_db: [{name: benz}, {name: benz2}],
-                         mariadb_users: [{name: ben3, pass: foobar, priv: "*.*:ALL"},
-                                       {name: ben2, pass: foo}],
-                         mariadb_db_id: 8 }
-
-      - hosts: slave
-        roles:
-         - {role: mariadb, mariadb_db: none, mariadb_users: none,
-                  mariadb_repl_role: slave, mariadb_repl_master: vm2,
-                  mariadb_db_id: 9, mariadb_repl_user: [{name: repl, pass: foobar}] }
+```yml
+mariadb_repl_role: None                  # Optional, the replication role. Must be in ['none', 'master', 'slave']
+mariadb_repl_master: undefined           # Mandatory when using replication. Inventory_hostname of the replication master
+mariadb_db_id: 0                         # Mandatory when using replication. Must be unique in replication compound
+mariadb_repl_user:                       # Mandatory when mariadb_repl_role: master
+  - name: repl
+    pass: foobar
+```
 
 Note: When configuring the full replication please make sure the master is
 configured via this role and the master is available in inventory and facts
 have been gathered for master. The replication tasks assume the database is
 new and has no data.
+
+## Example playbook
+
+```yml
+- hosts: all
+  vars:
+    mariadb_root_db_pass: foobar
+    mariadb_users:
+      - name: foo
+        pass: bar
+        priv: 'seafile_ccnet.*:ALL/seafile_seafile.*:ALL'
+    mariadb_db:
+      - seafile_ccnet
+      - seafile_seafile
+    mariadb_backupjobs:
+      - name: all_dbs
+        backupuserpass: foobar
+  roles:
+    - ansible-mariadb
+```
 
 ## Integration testing
 
@@ -149,17 +124,23 @@ Ruby with rake and bundler available.
     source  envvars-vagrant.sample
     RAKE_ANSIBLE_VAGRANT_DONT_CLEANUP=1 rake suite
 
+## Contributing
 
+If you want to contribute to this repository please be aware that this
+project uses a [gitflow](http://nvie.com/posts/a-successful-git-branching-model/)
+workflow with the next release branch called ``next``.
 
+Please fork this repository and create a local branch split off of the ``next``
+branch and create pull requests back to the origin ``next`` branch.
 
-License
--------
+## License
 
 BSD
 
-Author Information
-------------------
+## Author Information
 
-Benno Joy
+* Benno Joy
+* Mark Kusch @mark.kusch silpion.de
+* Alvaro Aleman @alvaro.aleman silpion.de
 
 <!-- vim: set nofen ts=4 sw=4 et: -->

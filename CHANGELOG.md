@@ -1,3 +1,11 @@
+# 2.1.0
+
+
+* Rewrite README.md
+* Remove defaulting for user passwords
+* Allow defining databases as string
+
+Alvaro Aleman (3):
 # 2.0.1
 
 Alvaro Aleman (4):
