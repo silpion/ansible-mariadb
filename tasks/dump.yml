@@ -3,7 +3,7 @@
   tags:
     - mariadb
     - mariadb_dump
-  with_items: mariadb_backupjobs
+  with_items: "{{ mariadb_backupjobs }}"
   assert:
     that:
       - item.name is defined
@@ -35,37 +35,37 @@
     - mariadb
     - mariadb_dump
   become: true
-  with_items: mariadb_roleinternal_backupjobs
+  with_items: "{{ mariadb_roleinternal_backupjobs }}"
   file:
-    state=directory
-    path="{{ item.destinationdir }}"
-    owner=0
-    group=0
-    mode=0755
+    state: directory
+    path: "{{ item.destinationdir }}"
+    owner: 0
+    group: 0
+    mode: 0755
 
 - name: Deploy backupscript
   tags:
     - mariadb
     - mariadb_dump
   become: true
-  with_items: mariadb_roleinternal_backupjobs
+  with_items: "{{ mariadb_roleinternal_backupjobs }}"
   template:
-    src=mariadb_dump.j2
-    dest="{{ mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
-    owner=0
-    group=0
-    mode=0700
+    src: mariadb_dump.j2
+    dest: "{{ mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
+    owner: 0
+    group: 0
+    mode: 0700
 
 - name: Create cronjob for backupscript
   tags:
     - mariadb
     - mariadb_dump
   become: true
-  with_items: mariadb_roleinternal_backupjobs
+  with_items: "{{ mariadb_roleinternal_backupjobs }}"
   cron:
-    state=present
-    job="{{mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
-    name="mariadb_backup_{{ item.name }}"
-    minute=0
-    hour="{{ item.hour }}"
-    weekday="{{ item.dayofweek }}"
+    state: present
+    job: "{{mariadb_backup_scriptbasepath }}/mariadb_backup_{{ item.name }}.sh"
+    name: "mariadb_backup_{{ item.name }}"
+    minute: 0
+    hour: "{{ item.hour }}"
+    weekday: "{{ item.dayofweek }}"
