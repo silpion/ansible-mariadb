@@ -15,7 +15,7 @@
 
 - name: Install the mariadb packages in Redhat derivatives
   tags: mariadb
-  with_items: mariadb_pkgs
+  with_items: "{{ mariadb_pkgs }}"
   when: ansible_os_family == 'RedHat'
   become: true
   yum:
@@ -24,7 +24,7 @@
 
 - name: Install the mariadb packages in Debian derivatives
   tags: mariadb
-  with_items: mariadb_pkgs
+  with_items: "{{ mariadb_pkgs }}"
   when: ansible_os_family == 'Debian'
   become: true
   apt:
@@ -89,7 +89,7 @@
 
 - name: Create the databases
   tags: mariadb
-  with_items: mariadb_db
+  with_items: "{{ mariadb_db }}"
   become: true
   mysql_db:
     state: "{{ item.state|default('present') }}"
@@ -106,7 +106,7 @@
 - name: Create the database users
   tags: mariadb
   no_log: true
-  with_items: mariadb_users_create
+  with_items: "{{ mariadb_users_create }}"
   become: true
   mysql_user:
     state: present
@@ -118,7 +118,7 @@
 
 - name: Create the replication users
   tags: mariadb
-  with_items: mariadb_repl_user
+  with_items: "{{ mariadb_repl_user }}"
   become: true
   when: mariadb_repl_role == 'master'
   mysql_user:
@@ -182,7 +182,7 @@
 - name: Apply additional mariadb configuration
   tags: mariadb
   notify: service restart mariadb
-  with_items: mariadb_config
+  with_items: "{{ mariadb_config }}"
   become: true
   ini_file:
     dest: "{{ mariadb_confd_dir }}/{{ mariadb_confd_file }}"

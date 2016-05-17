@@ -26,5 +26,5 @@
         - dump
         - tests
       become: true
-      with_items: mariadb_backupjobs
+      with_items: "{{ mariadb_backupjobs }}"
       command: '/usr/local/sbin/mariadb_backup_{{ item.name }}.sh'
