@@ -29,8 +29,17 @@ mariadb_confd_file: platform specific    # Optional, used for mariadb_config. Fo
 
 mariadb_db:                              # Optional, default: []
   - foo                                  # The name can be either passed as string or via the name key as shown below
-  - name: bar                            # If a db defined as dictionary, any key available for the mysql_db module can be used here
+  - state: present                       # Optional, default: present
+    name: bar
     replicate: false                     # Optional, only has an effect if replication is configured
+    collation: utf8_bin                  # Optional, default: omit
+    encoding: utf8                       # Optional, default: omit
+    target: /tmp/dumpfile.sql            # Optional, default: omit
+    login_host: localhost                # Optional, should not be used, default: localhost
+    login_port: 3306                     # Optional, default: {{ mariadb_port }}
+    login_user: root                     # Optional, default: root
+    login_password: 123                  # Optional, default: {{ mariadb_root_db_pass }}
+    login_unix_socket: /run/mysql.sock   # Optional, should not be used, default: omit
 
 mariadb_users:                           # Optional
   - name: benz                           # Mandatory
