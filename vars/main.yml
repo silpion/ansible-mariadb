@@ -1,3 +1,7 @@
 ---
 ## This needs to be empty at start of run and will be filled later
-mariadb_roleinternal_backupjobs: []
+# The |string is required because the template lookup returns a list object when the template evaluates to '[]'. That list
+# object can not be loaded by from_yaml. Upstream report: https://github.com/ansible/ansible/issues/17397
+mariadb_roleinternal_backupjobs: "{{ lookup('template', role_path ~ '/templates/var_mariadb_roleinternal_backupjobs.j2')|string|from_yaml}}"
+mariadb_backupusers: "{{ lookup('template', role_path ~ '/templates/var_mariadb_backupusers.j2')|string|from_yaml }}"
+mariadb_users_create: "{{ mariadb_users + mariadb_backupusers }}"
