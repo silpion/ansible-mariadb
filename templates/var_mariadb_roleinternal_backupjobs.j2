@@ -1,0 +1,21 @@
+{% if mariadb_backupjobs|length > 0 %}
+{% for item in mariadb_backupjobs %}
+- name: {{ item.name }}
+  username: bu_{{ item.name }}
+  pass: "{{ item.backupuserpass }}"
+{%    if item.databases is defined %}
+  databases:
+{%        for db in item.databases %}
+    - {{ db }}
+{%        endfor %}
+{%    else %}
+  databases: all
+{%    endif %}
+  dayofweek: "{{ item.dayofweek|default('*') }}"
+  hour: "{{ item.hour|default('4')}}"
+  destinationdir: {{ item.destinationdir|default(mariadb_backup_defaultdestinationdir)}}
+  autodeleteafter: {{ item.autodeleteafter|default('false') }}
+{% endfor %}
+{% else %}
+[]
+{% endif %}

@@ -1,0 +1,9 @@
+{% if mariadb_backupjobs|length > 0 %}
+{% for item in mariadb_backupjobs %}
+- name: bu_{{ item.name }}
+  pass: {{ item.backupuserpass }}
+  priv: "{% if item.databases|default('all') == 'all' %}*.*:SELECT,SHOW VIEW,TRIGGER{% else %}{% for db in item.databases %}{{ db }}.*:SELECT,SHOW VIEW,TRIGGER{% if not loop.last %}/{% endif %}{% endfor %}{% endif %}"
+{% endfor %}
+{% else %}
+[]
+{% endif %}
