@@ -1,6 +1,28 @@
 ---
 - hosts: all
   vars:
+    mariadb_db:
+      - name: foo
+        replicate: no
+      - name: bar
+      - foobar
+    mariadb_root_db_pass: foobar
+  roles:
+    - ansible-mariadb
+  post_tasks:
+    - name: Mock role_path variable
+      set_fact:
+        role_path: "{{ playbook_dir }}/.."
+    - name: Assert templated variables
+      assert:
+        that:
+          - mariadb_backupusers is iterable
+          - mariadb_roleinternal_backupjobs is iterable
+          - mariadb_backupusers|length == 0
+          - mariadb_roleinternal_backupjobs|length == 0
+
+- hosts: all
+  vars:
     mariadb_backupjobs:
       - name: all_dbs
         backupuserpass: foobar
@@ -17,8 +39,7 @@
       - foobar
     mariadb_root_db_pass: foobar
   roles:
-    - { role: ansible-mariadb, mariadb_backupjobs: [] }
-    - { role: ansible-mariadb }
+    - ansible-mariadb
   tasks:
     - name: Test if backupscript execution is successful
       tags:
@@ -28,3 +49,13 @@
       become: true
       with_items: "{{ mariadb_backupjobs }}"
       command: '/usr/local/sbin/mariadb_backup_{{ item.name }}.sh'
+    - name: Mock role_path variable
+      set_fact:
+        role_path: "{{ playbook_dir }}/.."
+    - name: Assert templated variables
+      assert:
+        that:
+          - mariadb_backupusers is iterable
+          - mariadb_roleinternal_backupjobs is iterable
+          - mariadb_backupusers|length == 2
+          - mariadb_roleinternal_backupjobs|length == 2

@@ -1,3 +1,12 @@
+# 2.1.2
+
+
+* Use lookup instead of local template vor dump variables
+* Use original license (BSD)
+* Update Ansible Galaxy info
+* Add documentation for mariadb_db parameters
+
+Alvaro Aleman (4):
 # 2.1.1
 
 
